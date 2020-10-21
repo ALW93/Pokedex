@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import {connect} from "react-redux";
 
 import { baseUrl } from './config';
 import LoginPanel from './LoginPanel';
@@ -19,8 +20,8 @@ class App extends React.Component {
     const token = window.localStorage.getItem('state-pokedex-token');
     this.state = {
       loaded: false,
-      token,
-      needLogin: !token,
+      token: props.authentication.token,
+      needLogin: props.needLogin
     };
   }
 
@@ -37,7 +38,7 @@ class App extends React.Component {
 
   async loadPokemon() {
     const response = await fetch(`${baseUrl}/pokemon`, {
-      headers: { Authorization: `Bearer ${this.state.token}`}
+      headers: { Authorization: `Bearer ${this.props.authentication.token}`}
     });
     if (response.ok) {
       const pokemon = await response.json();
@@ -52,14 +53,6 @@ class App extends React.Component {
     }
   }
 
-  updateToken = token => {
-    window.localStorage.setItem('state-pokedex-token', token);
-    this.setState({
-      needLogin: false,
-      token
-    });
-    this.loadPokemon();
-  }
 
   render() {
     if (!this.state.loaded) {
@@ -68,21 +61,20 @@ class App extends React.Component {
     const cProps = {
       pokemon: this.state.pokemon,
       handleCreated: this.handleCreated,
-      token: this.state.token
+      token: this.props.authentication.token
     };
     return (
       <BrowserRouter>
         <Switch>
-          <Route path="/login"
-            render={props => <LoginPanel {...props} updateToken={this.updateToken} />} />
+          <Route path="/login" component={LoginPanel} />
           <PrivateRoute path="/"
                         exact={true}
-                        needLogin={this.state.needLogin}
+                        needLogin={this.props.needLogin}
                         component={PokemonBrowser}
                         cProps={cProps} />
           <PrivateRoute path="/pokemon/:pokemonId"
                         exact={true}
-                        needLogin={this.state.needLogin}
+                        needLogin={this.props.needLogin}
                         component={PokemonBrowser}
                         cProps={cProps} />
         </Switch>
@@ -91,4 +83,17 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state) =>{
+  let needLogin = !state.authentication.token;
+  return {
+    authentication: state.authentication,
+    needLogin: needLogin,
+  }
+}
+
+const mapDispatchToProps = (dispatch)=>{
+  return{}
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
