@@ -1,56 +1,30 @@
 import React from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import {connect} from "react-redux";
-
-import { baseUrl } from './config';
 import LoginPanel from './LoginPanel';
 import PokemonBrowser from './PokemonBrowser';
+import {loadToken} from "./store/authentication";
 
-const PrivateRoute = ({ component: Component, cProps, ...rest }) => (
+const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (
     rest.needLogin === true
       ? <Redirect to='/login' />
-      : <Component {...props} {...cProps} />
+      : <Component {...props} />
   )} />
 )
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    const token = window.localStorage.getItem('state-pokedex-token');
     this.state = {
       loaded: false,
-      token: props.authentication.token,
       needLogin: props.needLogin
     };
   }
 
   async componentDidMount() {
+    this.props.loadToken();
     this.setState({ loaded: true });
-    this.loadPokemon();
-  }
-
-  handleCreated = (pokemon) => {
-    this.setState({
-      pokemon: [...this.state.pokemon, pokemon]
-    });
-  }
-
-  async loadPokemon() {
-    const response = await fetch(`${baseUrl}/pokemon`, {
-      headers: { Authorization: `Bearer ${this.props.authentication.token}`}
-    });
-    if (response.ok) {
-      const pokemon = await response.json();
-      this.setState({
-        pokemon,
-        needLogin: false,
-      });
-    } else {
-      this.setState({
-        needLogin: true
-      });
-    }
   }
 
 
@@ -58,11 +32,6 @@ class App extends React.Component {
     if (!this.state.loaded) {
       return null;
     }
-    const cProps = {
-      pokemon: this.state.pokemon,
-      handleCreated: this.handleCreated,
-      token: this.props.authentication.token
-    };
     return (
       <BrowserRouter>
         <Switch>
@@ -70,13 +39,11 @@ class App extends React.Component {
           <PrivateRoute path="/"
                         exact={true}
                         needLogin={this.props.needLogin}
-                        component={PokemonBrowser}
-                        cProps={cProps} />
+                        component={PokemonBrowser} />
           <PrivateRoute path="/pokemon/:pokemonId"
                         exact={true}
                         needLogin={this.props.needLogin}
-                        component={PokemonBrowser}
-                        cProps={cProps} />
+                        component={PokemonBrowser}/>
         </Switch>
       </BrowserRouter>
     )
@@ -86,13 +53,14 @@ class App extends React.Component {
 const mapStateToProps = (state) =>{
   let needLogin = !state.authentication.token;
   return {
-    authentication: state.authentication,
     needLogin: needLogin,
   }
 }
 
 const mapDispatchToProps = (dispatch)=>{
-  return{}
+  return{
+    loadToken: ()=>dispatch(loadToken())
+  }
 }
 
 

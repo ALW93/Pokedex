@@ -1,5 +1,6 @@
 import {baseUrl} from "../config"
 
+const TOKEN_KEY = "non-empty-string";
 const SET_TOKEN = 'pokedex/authentication/SET_TOKEN';
 
 export const setToken = (token) =>{
@@ -19,8 +20,14 @@ export const login = (email, password) => async dispatch => {
   
       if (response.ok) {
         const { token } = await response.json();
+        localStorage.setItem(TOKEN_KEY, token)
         dispatch(setToken(token))
       }
+  }
+
+  export const loadToken = () => async (dispatch) =>{
+      const token = localStorage.getItem(TOKEN_KEY);
+      dispatch(setToken(token));
   }
 
 
