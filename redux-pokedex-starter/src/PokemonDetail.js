@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { imageUrl, baseUrl } from './config';
+import {getPokemonDetail} from "./store/pokemonDetail";
+import {connect} from "react-redux"
 
 class PokemonDetail extends Component {
   constructor(props) {
@@ -22,19 +24,14 @@ class PokemonDetail extends Component {
 
   async loadPokemon() {
     const id = this.props.match.params.id;
-    const response = await fetch(`${baseUrl}/pokemon/${id}`, {
-      headers: { Authorization: `Bearer ${this.props.token}`}
-    });
-    if (response.ok) {
-      this.setState({
-        pokemon: await response.json(),
-      });
-    }
+    this.props.getPokemonDetail(id);
+    
   }
 
   render() {
-    const pokemon = this.state.pokemon;
-    if (!pokemon) {
+    const pokemon = this.props.pokemon;
+    console.log(pokemon)
+    if (true) {
       return null;
     }
     return (
@@ -94,4 +91,16 @@ class PokemonDetail extends Component {
   }
 }
 
-export default PokemonDetail;
+const mapStateToProps = (state) =>{
+  return{
+    pokemon: state.pokemonDetail
+  }
+}
+
+const mapDispatchToProps = (dispatch) =>{
+  return {
+    getPokemonDetail: (id) => dispatch(getPokemonDetail(id))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PokemonDetail)
