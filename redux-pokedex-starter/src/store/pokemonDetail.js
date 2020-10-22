@@ -20,7 +20,7 @@ export const pokemonDetailReducer = (state = {}, action) =>{
     
 }
 
-export const getPokemonDetail = (id) => async (dispatch, getState) =>{
+export const findPokemon = (id) => async (dispatch, getState) =>{
     const {authentication: {token}} = getState();
     const response = await fetch(`${baseUrl}/pokemon/${id}`, {
         headers: { Authorization: `Bearer ${token}`}

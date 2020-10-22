@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { imageUrl, baseUrl } from './config';
-import {getPokemonDetail} from "./store/pokemonDetail";
+import {findPokemon} from "./store/pokemonDetail";
 import {connect} from "react-redux"
 
 class PokemonDetail extends Component {
@@ -23,6 +23,7 @@ class PokemonDetail extends Component {
   }
 
   async loadPokemon() {
+    console.log("Trying to load a new pokemon")
     const id = this.props.match.params.id;
     this.props.getPokemonDetail(id);
     
@@ -30,8 +31,8 @@ class PokemonDetail extends Component {
 
   render() {
     const pokemon = this.props.pokemon;
-    console.log(pokemon)
-    if (true) {
+    console.log("Trying to render me" ,pokemon)
+    if (!pokemon.moves) {
       return null;
     }
     return (
@@ -99,7 +100,7 @@ const mapStateToProps = (state) =>{
 
 const mapDispatchToProps = (dispatch) =>{
   return {
-    getPokemonDetail: (id) => dispatch(getPokemonDetail(id))
+    getPokemonDetail: (id) => dispatch(findPokemon(id))
   }
 }
 
