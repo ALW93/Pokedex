@@ -1,25 +1,22 @@
 import React, { Component } from 'react';
 import { imageUrl, baseUrl } from './config';
-import {findPokemon} from "./store/pokemonDetail";
+import {findPokemon} from "./store/pokemon";
 import {connect} from "react-redux"
 
 class PokemonDetail extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  async componentDidMount() {
+   async componentDidMount() {
     await this.loadPokemon();
+    // this.props.getPokemonDetail(this.props.match.params.id);
   }
 
-  async componentDidUpdate(oldProps) {
+   async componentDidUpdate(oldProps) {
     const oldId = Number.parseInt(oldProps.match.params.id);
     const newId = Number.parseInt(this.props.match.params.id);
     if (oldId === newId) {
       return;
     }
     await this.loadPokemon();
+    // this.props.getPokemonDetail(newId);
   }
 
   async loadPokemon() {
@@ -30,9 +27,9 @@ class PokemonDetail extends Component {
   }
 
   render() {
-    const pokemon = this.props.pokemon;
-    console.log("Trying to render me" ,pokemon)
-    if (!pokemon.moves) {
+    const pokemon = this.props.current;
+
+    if (!pokemon) {
       return null;
     }
     return (
@@ -94,7 +91,7 @@ class PokemonDetail extends Component {
 
 const mapStateToProps = (state) =>{
   return{
-    pokemon: state.pokemonDetail
+    current: state.pokemon.current
   }
 }
 

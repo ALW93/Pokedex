@@ -1,13 +1,11 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import thunk from 'redux-thunk';
 import authentication from "./authentication"
-import {loadReducer} from "./pokemon"
-import {pokemonDetailReducer} from "./pokemonDetail";
+import pokemon from "./pokemon"
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const reducer = combineReducers({authentication, pokemon: loadReducer, pokemonDetail: pokemonDetailReducer
-});
+const reducer = combineReducers({authentication, pokemon});
 
 const configureStore = initialState => {
   return createStore(

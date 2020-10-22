@@ -34,8 +34,9 @@ class PokemonBrowser extends Component {
   }
 
   render() {
+    console.log("Trying to render me" )
     const pokemonId = Number.parseInt(this.props.match.params.pokemonId);
-    if (!this.props.pokemon) {
+    if (!this.props.list) {
       return null;
     }
     return (
@@ -43,7 +44,7 @@ class PokemonBrowser extends Component {
         <LogoutButton token={this.props.token} />
         <nav>
           <Fab hidden={this.state.showForm} onClick={this.showForm} />
-          {this.props.pokemon.map(pokemon => {
+          {this.props.list.map(pokemon => {
             return (
               <NavLink key={pokemon.name} to={`/pokemon/${pokemon.id}`}>
                 <div className={pokemonId === pokemon.id ? 'nav-entry is-selected' : 'nav-entry'}>
@@ -64,6 +65,7 @@ class PokemonBrowser extends Component {
           <Route path="/pokemon/:id" render={props =>
             <PokemonDetail {...props} token={this.props.token} />
           } />
+          // <Route path={"/pokemon/:id"} component={PokemonDetail} />
         }
       </main>
     );
@@ -72,7 +74,7 @@ class PokemonBrowser extends Component {
 
 const mapToStateProps = (state)=>{
   return{
-    pokemon: state.pokemon
+    list: state.pokemon.list
   }
 }
 
